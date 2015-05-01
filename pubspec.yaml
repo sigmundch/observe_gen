@@ -1,0 +1,5 @@
+name: observe
+dependencies:
+  source_gen: ^0.4.0+0
+dev_dependencies:
+  unittest: 0.12.0-beta.0
