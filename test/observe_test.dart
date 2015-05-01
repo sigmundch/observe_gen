@@ -11,7 +11,7 @@ part 'observe_test.g.dart';
 
 @observable int _i = 0;
 
-class A extends _AObservableHelpers {
+class A extends _AObservable {
   @observable int _j = 0;
   @observable int get _k => j + 1;
 }
@@ -23,8 +23,8 @@ copyI2J() { a.j = i; }
 copyK2K() { k = a.k; }
 
 main() {
-  observe(() => i).listen(copyI2J);
-  observe(() => a.k).listen(copyK2K);
+  var cancel1 = observe(() => i).listen(copyI2J);
+  var cancel2 = observe(() => a.k).listen(copyK2K);
 
   test('initial values are not notified', () {
     expect(i, 0);
@@ -39,5 +39,14 @@ main() {
     expect(a.j, 1);
     expect(a.k, 2);
     expect(k, 2);
+  });
+
+  test('change is not observed after cancel', () {
+    expect(a.k, 2);
+    i = 2;
+    expect(a.k, 3);
+    cancel1();
+    i = 5;
+    expect(a.k, 3);
   });
 }

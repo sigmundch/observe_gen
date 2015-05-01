@@ -7,7 +7,7 @@ int get i => _i_property.value;
 set i(int v) => _i_property.value = v;
 
 
-abstract class _AObservableHelpers {
+abstract class _AObservable {
   /// Generated from @observable int _j = 0;
   int get _j;
   set _j(int v);
