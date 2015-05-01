@@ -1,7 +1,4 @@
-## observe
-
-An example implementation of data-observability using source code generation on
-the side.
+## observe via `source_gen`
 
 This repository explores a new approach to implementing observability. The main
 difference with `package:observe` is that:
@@ -19,14 +16,19 @@ difference with `package:observe` is that:
 
   * we also change the API in ways that improve expressiveness:
 
-    * granularity of observability is done at the level of properties, not
+    * granularity: observability is done at the level of properties, not
       objects. This makes it possible to observe top-level variables.
 
-    * we support observing getters and establish automatically how they depend
-      on other observable properties.
+    * getters support: we support observing getters and establish automatically
+      how they depend on other observable properties. This should remove any
+      need for `PathObservers`.
 
-    * there is no Observable object interface, only observable expressions (see
-      the `observe` function below).
+    * listening anywhere: there is no Observable object interface anymore, only
+      observable expressions (see the `observe` function below).
+
+_Note_: the current API doesn't explore what to do about observable lists
+and maps. Currently listeners are called without any change records. We need to
+explore what that would look like for these collections.
 
 #### Status
 
@@ -61,34 +63,38 @@ class Example extends _ExampleObservable {
 }
 ```
 
-To listen for changes, you can create an observable expression as follows:
+An observable expression is created by calling `observe` on a closure that
+evaluates to a value. For example:
 ```dart
+var example = new Example();
+var observableExpression = observe(() => 'value-${example.derived}');
+```
 
-main() {
-  var example = new Example();
+To listen for changes, attach a listener to an observable expression:
+```dart
   var listener = () => print('Derived changed: $example');
-  var cancel = observe(() => example.derived).listen(listener);
+  var cancel = observableExpression.listen(listener);
   ...
 ```
 
-The `listener` callback will beinvoked any time `derived` is changed until the
-subscription to events is cancelled. For example, the following code:
+The `listener` callback will be invoked any time an observable subexpression
+changes (until the subscription is cancelled). For example, the following code:
 
 ```dart
 example.j = 2;
-i = 65;
+i = 60;
 cancel();
-i = 3;
+i = 2;
 ```
 
 Will print:
 ```
-  Derived changed: 2
-  Derived changed: 67
+  Derived changed: value-2
+  Derived changed: value-62
 ```
 
-But will not print `Derived changed: 4` because we stopped listening before the
-last change.
+But will not print `Derived changed: value-4` because we stopped listening
+before the last change.
 
 #### Unit test
 
