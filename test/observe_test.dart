@@ -26,11 +26,11 @@ main() {
   observe(() => i).listen(copyI2J);
   observe(() => a.k).listen(copyK2K);
 
-  test('initial values are not intercepted', () {
+  test('initial values are not notified', () {
     expect(i, 0);
     expect(a.j, 0);
     expect(a.k, 1);
-    expect(k, isNull); // if it were intercepted, this would be 1.
+    expect(k, isNull); // if it were notified, this would be 1.
   });
 
   test('change is observed synchornously', () {

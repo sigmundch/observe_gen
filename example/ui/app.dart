@@ -19,8 +19,7 @@ part 'app.g.dart';
 
 /// A data model with observable properties
 class Model extends _ModelObservable {
-  // Note: these annotations drive the source generator of
-  // _ModelObservableHelpers.
+  // Note: source_gen uses these annotations to generate _ModelObservable.
   @observable int _i = 1;
   @observable int _a = 1;
   @observable int _b = 20;
